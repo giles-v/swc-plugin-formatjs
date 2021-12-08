@@ -1,6 +1,11 @@
 import { defineMessages, FormattedMessage } from 'react-intl';
 import React from 'react';
-export const foo = /*#__PURE__*/ React.createElement(FormattedMessage, {
+export const foo1 = /*#__PURE__*/ React.createElement(FormattedMessage, {
+    defaultMessage: "a",
+    description: "b",
+    id: "m/KfEL"
+});
+export const foo2 = /*#__PURE__*/ React.createElement(Intl.FormattedMessage, {
     defaultMessage: "a",
     description: "b",
     id: "m/KfEL"
@@ -11,4 +16,12 @@ export const msgs = defineMessages({
         description: 'd',
         id: "1xi76U"
     }
+});
+export const x = _i18N.intl.formatMessage({
+    defaultMessage: 'e',
+    id: "WOazpB"
+});
+export const y = formatMessage({
+    defaultMessage: 'e',
+    id: "WOazpB"
 });

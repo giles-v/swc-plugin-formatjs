@@ -1,11 +1,9 @@
 {
-  "dependencies": {
-    "@swc/core": "^1.2.115"
-  },
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
     "@babel/preset-typescript": "^7.16.0",
+    "@swc/core": "^1.2.117",
     "@types/jest": "^27.0.3",
     "babel-jest": "^27.4.2",
     "crypto": "^1.0.1",

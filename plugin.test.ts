@@ -16,6 +16,10 @@ const swcConfig: Options = {
 };
 const fooId = generateOverrideId('foo');
 
+function collapseWhitespace(s: string) {
+  return s.replace(/\n/g, '').replace(/\s+/g, ' ');
+}
+
 describe('FormatJsTransformer', () => {
   describe('transformFile', () => {
     it('provides a computed id when one is missing', async () => {
@@ -24,7 +28,7 @@ describe('FormatJsTransformer', () => {
         'utf-8'
       );
       const out = await transformFile(path.join(__dirname, 'test_data', 'fixture.tsx'), swcConfig);
-      expect(out.code.trim()).toEqual(expectedOut);
+      expect(out.code).toEqual(expectedOut);
     });
   });
   describe('transformSync', () => {
@@ -34,22 +38,18 @@ describe('FormatJsTransformer', () => {
           'const msg = <FormattedMessage defaultMessage="foo" />;',
           swcConfig
         );
-        expect(out.code.trim())
-          .toEqual(`const msg = /*#__PURE__*/ React.createElement(FormattedMessage, {
-    defaultMessage: "foo",
-    id: "${fooId}"
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = /*#__PURE__*/ React.createElement(FormattedMessage, { defaultMessage: "foo", id: "${fooId}"});`
+        );
       });
       it('overrides an existing ID', () => {
         const out = transformSync(
           'const msg = <FormattedMessage id="abc" defaultMessage="foo" />;',
           swcConfig
         );
-        expect(out.code.trim())
-          .toEqual(`const msg = /*#__PURE__*/ React.createElement(FormattedMessage, {
-    id: "${fooId}",
-    defaultMessage: "foo"
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = /*#__PURE__*/ React.createElement(FormattedMessage, { id: "${fooId}", defaultMessage: "foo"});`
+        );
       });
     });
     describe('<FormattedHTMLMessage>', () => {
@@ -58,48 +58,58 @@ describe('FormatJsTransformer', () => {
           'const msg = <FormattedHTMLMessage defaultMessage="foo" />;',
           swcConfig
         );
-        expect(out.code.trim())
-          .toEqual(`const msg = /*#__PURE__*/ React.createElement(FormattedHTMLMessage, {
-    defaultMessage: "foo",
-    id: "${fooId}"
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = /*#__PURE__*/ React.createElement(FormattedHTMLMessage, { defaultMessage: "foo", id: "${fooId}"});`
+        );
       });
       it('overrides an existing ID', () => {
         const out = transformSync(
           'const msg = <FormattedHTMLMessage id="abc" defaultMessage="foo" />;',
           swcConfig
         );
-        expect(out.code.trim())
-          .toEqual(`const msg = /*#__PURE__*/ React.createElement(FormattedHTMLMessage, {
-    id: "${fooId}",
-    defaultMessage: "foo"
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = /*#__PURE__*/ React.createElement(FormattedHTMLMessage, { id: "${fooId}", defaultMessage: "foo"});`
+        );
       });
     });
     describe('defineMessages', () => {
       it('provides a computed id when one is missing', () => {
         const out = transformSync(
-          "const msgs = defineMessages({ bar: { defaultMessage: 'foo' }, });",
+          "const msgs = defineMessages({ bar: { defaultMessage: 'foo' }});",
           swcConfig
         );
-        expect(out.code.trim()).toEqual(`const msgs = defineMessages({
-    bar: {
-        defaultMessage: 'foo',
-        id: "${fooId}"
-    }
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msgs = defineMessages({ bar: { defaultMessage: 'foo', id: "${fooId}" }});`
+        );
       });
       it('overrides an existing ID', () => {
         const out = transformSync(
-          "const msgs = defineMessages({ bar: { id: 'aaaaaa', defaultMessage: 'foo' }, });",
+          "const msgs = defineMessages({ bar: { id: 'aaaaaa', defaultMessage: 'foo' }});",
           swcConfig
         );
-        expect(out.code.trim()).toEqual(`const msgs = defineMessages({
-    bar: {
-        id: "${fooId}",
-        defaultMessage: 'foo'
-    }
-});`);
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msgs = defineMessages({ bar: { id: "${fooId}", defaultMessage: 'foo' }});`
+        );
+      });
+    });
+    describe('formatMessage', () => {
+      it('provides a computed id when one is missing', () => {
+        const out = transformSync(
+          "const msg = formatMessage({ defaultMessage: 'foo' });",
+          swcConfig
+        );
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = formatMessage({ defaultMessage: 'foo', id: "${fooId}"});`
+        );
+      });
+      it('overrides an existing ID', () => {
+        const out = transformSync(
+          "const msg = formatMessage({ id: 'c', defaultMessage: 'foo' });",
+          swcConfig
+        );
+        expect(collapseWhitespace(out.code)).toEqual(
+          `const msg = formatMessage({ id: "${fooId}", defaultMessage: 'foo'});`
+        );
       });
     });
   });
